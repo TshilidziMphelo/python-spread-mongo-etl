@@ -13,16 +13,20 @@ collection_name = "final_uso"
 def load_data_to_mongodb(file_path):
     start_time = time.time()  # Start tracking execution time
     try:
-        data = pd.read_excel(file_path, engine='openpyxl')
+        # Read the Excel file into a pandas DataFrame
+	data = pd.read_excel(file_path, engine='openpyxl')
         records = data.to_dict(orient='records')  # Convert DataFrame to list of dictionaries
 				     
-        client = MongoClient(MONGO_URI)
+        # MongoDB connection
+	client = MongoClient(MONGO_URI)
         db = client[db_name]
         collection = db[collection_name]
 
+	# Insert records into MongoDB
 	result = collection.insert_many(records)
         logging.info(f"Inserted {len(result.inserted_ids)} records into MongoDB")
         
+	# Execution time
 	elapsed_time = time.time() - start_time
 	logging.info(f"Data loaded successfully in {elapsed_time:.2f} seconds.")
 
@@ -31,7 +35,7 @@ def load_data_to_mongodb(file_path):
 	raise
     
     finally:
-        client.close()
+        client.close()  # Close MongoDB connection
 
 if __name__ == "__main__":
     file_path = "FINAL_USO.xlsx"  # Path to your Excel file
