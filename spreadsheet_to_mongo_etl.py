@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 import time
 from datetime import datetime
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # MongoDB connection details
 MONGO_URI = "mongodb://localhost:27017/"
@@ -17,12 +20,15 @@ def load_data_to_mongodb(file_path):
         db = client[db_name]
         collection = db[collection_name]
 
-        elapsed_time = time.time() - start_time
-
 	result = collection.insert_many(records)
-    
+        logging.info(f"Inserted {len(result.inserted_ids)} records into MongoDB")
+        
+	elapsed_time = time.time() - start_time
+	logging.info(f"Data loaded successfully in {elapsed_time:.2f} seconds.")
+
     except Exception as e:
-        raise
+        logging.error(f"An error occurred: {e}")
+	raise
     
     finally:
         client.close()
